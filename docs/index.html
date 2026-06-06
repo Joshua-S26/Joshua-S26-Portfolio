@@ -8,6 +8,9 @@
 <meta property="og:title" content="Olist Delivery Insights | Power BI Case Study" />
 <meta property="og:description" content="Late deliveries put about $2.9M (21% of sales) of repeat revenue at risk. A Power BI report built as code (TMDL + PBIR)." />
 <meta property="og:type" content="website" />
+<meta property="og:image" content="https://joshua-s26.github.io/PBI-Portfolio/img/hero-dashboard.png" />
+<meta property="og:url" content="https://joshua-s26.github.io/PBI-Portfolio/" />
+<meta name="twitter:card" content="summary_large_image" />
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -15,20 +18,35 @@
 <!-- ============================= HERO ============================= -->
 <header class="hero">
   <div class="wrap">
-    <div class="badge">Power BI · Analytics Engineering · Case study</div>
-    <h1>Late deliveries put <span class="accent">about $2.9M (21% of sales)</span> of repeat revenue at risk.
-      On-time delivery is the fastest lever to protect it.<!-- [confirm] $ figure --></h1>
-    <p class="lede">A single-page executive dashboard on Brazil's Olist marketplace (about 100K orders) that ties
-      delivery performance to customer satisfaction and puts a dollar figure on the exposure. Built as code in
-      Power BI, with the semantic model in TMDL and the report in PBIR.</p>
+    <div class="topbar">
+      <span class="brand">Joshua Short · Power BI / Analytics Engineer</span>
+      <span class="links">
+        <a href="https://github.com/Joshua-S26/PBI-Portfolio" target="_blank" rel="noopener">GitHub</a> &nbsp;·&nbsp;
+        <a href="https://www.linkedin.com/in/joshua-s26" target="_blank" rel="noopener">LinkedIn</a>
+      </span>
+    </div>
+    <h1 class="lead">Late deliveries put <span class="accent">about $2.9M (21% of sales)</span> of repeat revenue at
+      risk. On-time delivery is the fastest lever to protect it.<!-- [confirm] $ figure --></h1>
+    <figure class="shot hero-shot">
+      <!-- SCREENSHOT: docs/img/hero-dashboard.png -->
+      <img src="img/hero-dashboard.png"
+           alt="Olist Delivery Insights dashboard: a KPI strip (Total sales, Orders, Avg order value, On-time delivery, Revenue at risk) each with a goal indicator; a scatter of average review score versus average delivery days with one bubble per state; a state scorecard table with conditional formatting; and a key-insights bar."
+           loading="eager"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+      <div class="imgslot" style="display:none">
+        <strong>Hero screenshot goes here</strong>
+        <span>Save the dashboard PNG as <code>docs/img/hero-dashboard.png</code></span>
+      </div>
+      <figcaption>Olist Delivery Insights: a single-page executive dashboard built as code in Power BI (TMDL and PBIR). Click to enlarge.</figcaption>
+    </figure>
+    <div class="cta">
+      <a class="btn btn-primary" href="#walkthrough">How to read it ↓</a>
+      <a class="btn btn-ghost" href="https://github.com/Joshua-S26/PBI-Portfolio" target="_blank" rel="noopener">Source &amp; model on GitHub</a>
+    </div>
     <div class="pills">
       <span class="pill">Power BI</span><span class="pill">DAX</span><span class="pill">Power Query (M)</span>
       <span class="pill">Star schema · TMDL</span><span class="pill">PBIR (report as code)</span>
       <span class="pill">Microsoft Fabric · PySpark</span>
-    </div>
-    <div class="cta">
-      <a class="btn btn-primary" href="#dashboard">See the dashboard ↓</a>
-      <a class="btn btn-ghost" href="https://github.com/Joshua-S26/PBI-Portfolio" target="_blank" rel="noopener">Source &amp; model on GitHub</a>
     </div>
   </div>
 </header>
@@ -90,30 +108,22 @@
 </section>
 
 <!-- ========================= DASHBOARD =========================== -->
-<section id="dashboard">
+<section id="walkthrough">
   <div class="wrap">
-    <p class="eyebrow">The dashboard</p>
-    <h2>Olist Delivery Insights, executive overview</h2>
-    <p class="sub">One page, designed for a five-second read at the top and depth on the way down. Click the image to enlarge.</p>
-    <figure class="shot">
-      <!-- ============================================================ -->
-      <!-- SCREENSHOT SLOT: save the dashboard PNG to docs/img/hero-dashboard.png -->
-      <!-- (full-resolution export from Power BI Desktop; see capture steps) -->
-      <!-- ============================================================ -->
-      <img src="img/hero-dashboard.png"
-           alt="Olist Delivery Insights dashboard: a KPI strip (Total sales, Orders, Avg order value, On-time delivery, Revenue at risk) each with a goal indicator; a scatter of average review score versus average delivery days with one bubble per state; a state scorecard table with conditional formatting; and a key-insights bar."
-           loading="lazy"
-           onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-      <div class="imgslot" style="display:none">
-        <strong>Hero screenshot goes here</strong>
-        <span>Save the dashboard PNG as <code>docs/img/hero-dashboard.png</code></span>
-      </div>
-      <figcaption><strong>How to read it.</strong> The KPI strip shows each headline metric against a target (green is
-        ahead, red is behind). The scatter is the proof: as average delivery days rise (moving right), average review
-        score falls (moving down), with the remote northern states sitting in the slow, low-rated corner. The state
-        scorecard ranks every state by sales and by Revenue at Risk, and the key-insight bar restates the takeaway as
-        you filter.</figcaption>
-    </figure>
+    <p class="eyebrow">How to read the dashboard</p>
+    <h2>What to notice, top to bottom</h2>
+    <p class="sub">The page is designed for a five-second read at the top and depth on the way down.</p>
+    <div class="grid">
+      <div class="card accent-teal"><h3>KPI strip</h3><p>Each headline metric sits against a target: green is ahead,
+        red is behind. A quick read on sales, orders, average order value, on-time delivery, and revenue at risk.</p></div>
+      <div class="card accent-gold"><h3>The scatter (the proof)</h3><p>Average review score versus average delivery
+        days, one bubble per state. As delivery days rise (moving right), review score falls (moving down), with the
+        remote northern states in the slow, low-rated corner.</p></div>
+      <div class="card accent-red"><h3>State scorecard</h3><p>Every state ranked by sales and by Revenue at Risk, with
+        conditional formatting. Sort by Revenue at Risk and you have the worklist.</p></div>
+      <div class="card"><h3>Key-insight bar</h3><p>Restates the takeaway in plain language and updates as you filter by
+        year, product category, or state.</p></div>
+    </div>
   </div>
 </section>
 
