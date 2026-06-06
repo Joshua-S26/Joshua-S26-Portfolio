@@ -1,0 +1,46 @@
+/// Seller dimension. One row per seller_id. Relates to Fact_OrderItems
+/// (order-line grain) only.
+table Dim_Seller
+	lineageTag: c1540f78-33ff-4276-b91b-d475597020c4
+
+	column seller_id
+		dataType: string
+		isHidden
+		isKey
+		lineageTag: aa1b477b-0675-4a89-8693-4f10003d6fd8
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Seller City'
+		dataType: string
+		lineageTag: 364e50aa-d60c-4147-b57f-a653b6fb21bc
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: Seller City
+
+		annotation SummarizationSetBy = None
+
+	column 'Seller State'
+		dataType: string
+		lineageTag: 4020582c-3a0f-40a0-a6e6-b0f3458a40a0
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: Seller State
+
+		annotation SummarizationSetBy = None
+
+	partition Dim_Seller = m
+		mode: import
+		source =
+				let
+				    Source = fnLoadCsv("olist_sellers_dataset.csv"),
+				    Selected = Table.SelectColumns(Source, {"seller_id", "seller_city", "seller_state"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"seller_id", type text}, {"seller_city", type text}, {"seller_state", type text}}),
+				    Renamed = Table.RenameColumns(Typed, {{"seller_city", "Seller City"}, {"seller_state", "Seller State"}})
+				in
+				    Renamed
+
+	annotation PBI_ResultType = Table
+

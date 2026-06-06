@@ -1,0 +1,167 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "name": "98f51bde2faaf48d6354",
+  "position": {
+    "x": 52,
+    "y": 130,
+    "z": 1,
+    "width": 1176,
+    "height": 550
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Customer"
+                    }
+                  },
+                  "Property": "Customer State"
+                }
+              },
+              "queryRef": "Dim_Customer.Customer State",
+              "nativeQueryRef": "Customer State"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_Customer"
+                    }
+                  },
+                  "Property": "Customer City"
+                }
+              },
+              "queryRef": "Dim_Customer.Customer City",
+              "nativeQueryRef": "Customer City"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Orders"
+                    }
+                  },
+                  "Property": "Order Status"
+                }
+              },
+              "queryRef": "Fact_Orders.Order Status",
+              "nativeQueryRef": "Order Status"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Orders"
+                    }
+                  },
+                  "Property": "Delivered Date"
+                }
+              },
+              "queryRef": "Fact_Orders.Delivered Date",
+              "nativeQueryRef": "Delivered Date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Orders"
+                    }
+                  },
+                  "Property": "Estimated Date"
+                }
+              },
+              "queryRef": "Fact_Orders.Estimated Date",
+              "nativeQueryRef": "Estimated Date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Orders"
+                    }
+                  },
+                  "Property": "delivery_days"
+                }
+              },
+              "queryRef": "Fact_Orders.delivery_days",
+              "nativeQueryRef": "delivery_days"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Orders"
+                    }
+                  },
+                  "Property": "is_late"
+                }
+              },
+              "queryRef": "Fact_Orders.is_late",
+              "nativeQueryRef": "is_late"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Fact_Orders"
+                    }
+                  },
+                  "Property": "review_score"
+                }
+              },
+              "queryRef": "Fact_Orders.review_score",
+              "nativeQueryRef": "review_score"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Total Sales"
+                }
+              },
+              "queryRef": "_Measures.Total Sales",
+              "nativeQueryRef": "Total Sales"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Fact_Orders"
+                  }
+                },
+                "Property": "Delivered Date"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    }
+  }
+}

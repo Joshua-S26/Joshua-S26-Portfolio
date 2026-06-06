@@ -1,0 +1,99 @@
+/// Date dimension, marked as a Date table (dataCategory: Time). One contiguous row
+/// per calendar day across the order history. Conformed dimension: filters both
+/// Fact_Orders and Fact_OrderItems. Drives all time-intelligence measures.
+table Dim_Date
+	lineageTag: 0a21b220-fe31-42e0-8f84-b95cc6cece04
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: b3e4207d-b0a6-49d2-824d-11dd49e027ec
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: d7b6add9-8ff8-4362-b4af-b694bb3afb84
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = User
+
+	column Quarter
+		dataType: string
+		lineageTag: c8e4c364-aa4f-4ce8-8360-123e0d36f7ab
+		summarizeBy: none
+		sourceColumn: Quarter
+
+		annotation SummarizationSetBy = None
+
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 556e7b3f-8f56-41eb-8764-0d11fc837d46
+		summarizeBy: none
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = User
+
+	column Month
+		dataType: string
+		lineageTag: 17761d98-6dc0-475c-a36e-1add07800c7d
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = None
+
+	column 'Month Year'
+		dataType: string
+		lineageTag: 467a4851-1440-4afd-8e1c-aa57e256e7e4
+		summarizeBy: none
+		sourceColumn: Month Year
+		sortByColumn: 'Month Year Sort'
+
+		annotation SummarizationSetBy = None
+
+	column 'Month Year Sort'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 73f7e7fa-7680-4680-a62c-a928c7cccb89
+		summarizeBy: none
+		sourceColumn: Month Year Sort
+
+		annotation SummarizationSetBy = User
+
+	partition Dim_Date = m
+		mode: import
+		source =
+				let
+				    Orders = fnLoadCsv("olist_orders_dataset.csv"),
+				    Purchases = Table.TransformColumnTypes(Orders, {{"order_purchase_timestamp", type datetime}}),
+				    MinDate = Date.From(List.Min(Purchases[order_purchase_timestamp])),
+				    MaxDate = Date.From(List.Max(Purchases[order_purchase_timestamp])),
+				    StartDate = #date(Date.Year(MinDate), 1, 1),
+				    EndDate = #date(Date.Year(MaxDate), 12, 31),
+				    DayCount = Duration.Days(EndDate - StartDate) + 1,
+				    Dates = List.Dates(StartDate, DayCount, #duration(1, 0, 0, 0)),
+				    TableFromList = Table.FromList(Dates, Splitter.SplitByNothing(), {"Date"}),
+				    TypedDate = Table.TransformColumnTypes(TableFromList, {{"Date", type date}}),
+				    AddYear = Table.AddColumn(TypedDate, "Year", each Date.Year([Date]), Int64.Type),
+				    AddQuarter = Table.AddColumn(AddYear, "Quarter", each "Q" & Text.From(Date.QuarterOfYear([Date])), type text),
+				    AddMonthNo = Table.AddColumn(AddQuarter, "Month Number", each Date.Month([Date]), Int64.Type),
+				    AddMonth = Table.AddColumn(AddMonthNo, "Month", each Date.ToText([Date], "MMM", "en-US"), type text),
+				    AddMonthYear = Table.AddColumn(AddMonth, "Month Year", each Date.ToText([Date], "MMM yyyy", "en-US"), type text),
+				    AddMonthYearSort = Table.AddColumn(AddMonthYear, "Month Year Sort", each Date.Year([Date]) * 100 + Date.Month([Date]), Int64.Type)
+				in
+				    AddMonthYearSort
+
+	annotation PBI_ResultType = Table
+

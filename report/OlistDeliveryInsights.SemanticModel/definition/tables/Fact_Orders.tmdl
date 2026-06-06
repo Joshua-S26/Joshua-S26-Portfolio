@@ -1,0 +1,122 @@
+/// Order-header fact: one row per order_id. Carries the delivery and satisfaction
+/// measures of the model. delivery_days and is_late are derived in Power Query from
+/// the delivered vs. estimated dates; review_score is the latest review per order.
+/// order_id is kept as a (hidden) degenerate key so Revenue at Risk can project
+/// risky orders onto the order-line grain via TREATAS.
+table Fact_Orders
+	lineageTag: 8d671c9b-87b1-47bb-8f67-f00abb93b7d7
+
+	column order_id
+		dataType: string
+		isHidden
+		isKey
+		lineageTag: e2df3283-9f0d-45e5-8250-942b49f39ccb
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: string
+		isHidden
+		lineageTag: 9a74df5b-71aa-4634-9ff6-74df11e0f39f
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column purchase_date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: 30be2045-7fce-41e7-aed2-e9d0827ed974
+		summarizeBy: none
+		sourceColumn: purchase_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Order Status'
+		dataType: string
+		lineageTag: dc25009c-4439-4776-9826-900708231556
+		summarizeBy: none
+		sourceColumn: Order Status
+
+		annotation SummarizationSetBy = None
+
+	column review_score
+		dataType: int64
+		formatString: 0
+		lineageTag: 37212eb6-147c-4187-9377-cf417dafad34
+		summarizeBy: none
+		sourceColumn: review_score
+
+		annotation SummarizationSetBy = User
+
+	column delivery_days
+		dataType: int64
+		formatString: 0
+		lineageTag: b516f5b3-bded-4bb2-9d56-077c5f7c3aad
+		summarizeBy: none
+		sourceColumn: delivery_days
+
+		annotation SummarizationSetBy = User
+
+	column is_late
+		dataType: boolean
+		lineageTag: 20799a28-0f77-461f-af69-16cc3d4cacfa
+		summarizeBy: none
+		sourceColumn: is_late
+
+		annotation SummarizationSetBy = None
+
+	column 'Delivered Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 1f3cbfd4-b3d9-4b44-a300-9a1f94be1288
+		summarizeBy: none
+		sourceColumn: Delivered Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Estimated Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 0d8c6fad-4c22-4f5d-bcdb-dc17ec82f0c2
+		summarizeBy: none
+		sourceColumn: Estimated Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition Fact_Orders = m
+		mode: import
+		source =
+				let
+				    Orders = fnLoadCsv("olist_orders_dataset.csv"),
+				    Typed = Table.TransformColumnTypes(Orders, {{"order_purchase_timestamp", type datetime}, {"order_delivered_customer_date", type datetime}, {"order_estimated_delivery_date", type datetime}}),
+				    Reviews = fnLoadCsv("olist_order_reviews_dataset.csv"),
+				    ReviewsTyped = Table.TransformColumnTypes(Reviews, {{"review_score", Int64.Type}, {"review_creation_date", type datetime}}),
+				    ReviewsSorted = Table.Sort(ReviewsTyped, {{"review_creation_date", Order.Descending}}),
+				    ReviewsBuffered = Table.Buffer(ReviewsSorted),
+				    ReviewsDedup = Table.Distinct(ReviewsBuffered, {"order_id"}),
+				    ReviewsSel = Table.SelectColumns(ReviewsDedup, {"order_id", "review_score"}),
+				    JoinRev = Table.NestedJoin(Typed, {"order_id"}, ReviewsSel, {"order_id"}, "R", JoinKind.LeftOuter),
+				    ExpandRev = Table.ExpandTableColumn(JoinRev, "R", {"review_score"}, {"review_score"}),
+				    AddPurchaseDate = Table.AddColumn(ExpandRev, "purchase_date", each Date.From([order_purchase_timestamp]), type date),
+				    AddDeliveryDays = Table.AddColumn(AddPurchaseDate, "delivery_days", each if [order_delivered_customer_date] <> null then Duration.Days([order_delivered_customer_date] - [order_purchase_timestamp]) else null, Int64.Type),
+				    AddIsLate = Table.AddColumn(AddDeliveryDays, "is_late", each if [order_delivered_customer_date] <> null and [order_estimated_delivery_date] <> null then [order_delivered_customer_date] > [order_estimated_delivery_date] else null, type logical),
+				    AddDelivered = Table.AddColumn(AddIsLate, "Delivered Date", each Date.From([order_delivered_customer_date]), type date),
+				    AddEstimated = Table.AddColumn(AddDelivered, "Estimated Date", each Date.From([order_estimated_delivery_date]), type date),
+				    Renamed = Table.RenameColumns(AddEstimated, {{"order_status", "Order Status"}}),
+				    Selected = Table.SelectColumns(Renamed, {"order_id", "customer_id", "purchase_date", "Order Status", "review_score", "delivery_days", "is_late", "Delivered Date", "Estimated Date"}),
+				    Typed2 = Table.TransformColumnTypes(Selected, {{"order_id", type text}, {"customer_id", type text}, {"Order Status", type text}})
+				in
+				    Typed2
+
+	annotation PBI_ResultType = Table
+

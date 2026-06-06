@@ -1,0 +1,17 @@
+expression CsvFolder = "C:\Users\jshor\OneDrive\Desktop\0. Main Areas\16. Career\00 Job Search\2026 Jobs\Portfolio\olist-delivery-insights\report\data" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 57751216-16ac-4dd3-a256-ca8fa999a879
+
+	annotation PBI_ResultType = Text
+
+expression fnLoadCsv =
+		(fileName as text) as table =>
+		    let
+		        Source = Csv.Document(
+		            File.Contents(CsvFolder & "/" & fileName),
+		            [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+		        ),
+		        Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true])
+		    in
+		        Promoted
+	lineageTag: 1333362a-48c5-4e89-b9b9-ffc7ca9a080b
+

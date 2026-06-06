@@ -1,0 +1,397 @@
+{
+  "name": "Olist Delivery Insights",
+  "dataColors": [
+    "#2E5E8C",
+    "#9DB4CB",
+    "#7FA8C9",
+    "#E8A33D",
+    "#C0504D",
+    "#6B8F71",
+    "#8C6BA1",
+    "#A6B4C0"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#22303C",
+  "tableAccent": "#2E5E8C",
+  "good": "#2E7D5B",
+  "neutral": "#E8A33D",
+  "bad": "#C0504D",
+  "maximum": "#2E5E8C",
+  "center": "#FFFFFF",
+  "minimum": "#C0504D",
+  "firstLevelElements": "#22303C",
+  "secondLevelElements": "#5A6B78",
+  "thirdLevelElements": "#D4DBE2",
+  "fourthLevelElements": "#8A98A4",
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 13,
+      "color": "#22303C"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10,
+      "color": "#3A4A57"
+    },
+    "callout": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 20,
+      "color": "#22303C"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": false
+          }
+        ],
+        "border": [
+          {
+            "show": false
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": false
+          }
+        ],
+        "title": [
+          {
+            "show": false
+          }
+        ]
+      }
+    },
+    "card": {
+      "*": {
+        "categoryLabels": [
+          {
+            "show": false
+          }
+        ],
+        "labels": [
+          {
+            "fontSize": 15,
+            "fontFamily": "Segoe UI Semibold",
+            "color": {
+              "solid": {
+                "color": "#22303C"
+              }
+            }
+          }
+        ],
+        "wordWrap": [
+          {
+            "show": false
+          }
+        ],
+        "background": [
+          {
+            "show": false
+          }
+        ],
+        "border": [
+          {
+            "show": false
+          }
+        ]
+      }
+    },
+    "cardVisual": {
+      "*": {
+        "categoryLabels": [
+          {
+            "show": true,
+            "fontSize": 11,
+            "color": {
+              "solid": {
+                "color": "#6B7C8A"
+              }
+            }
+          }
+        ],
+        "calloutValue": [
+          {
+            "fontSize": 19,
+            "fontFamily": "Segoe UI Semibold",
+            "color": {
+              "solid": {
+                "color": "#22303C"
+              }
+            }
+          }
+        ],
+        "background": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            }
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#E2E7EC"
+              }
+            },
+            "radius": 12
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#1A2A38"
+              }
+            },
+            "position": "Outer",
+            "preset": "Custom",
+            "shadowSpread": 0,
+            "shadowBlur": 9,
+            "angle": 90,
+            "shadowDistance": 2,
+            "transparency": 90
+          }
+        ]
+      }
+    },
+    "columnChart": {
+      "*": {
+        "categoryAxis": [
+          {
+            "show": true,
+            "showAxisTitle": false,
+            "fontSize": 9,
+            "labelColor": {
+              "solid": {
+                "color": "#5A6B78"
+              }
+            }
+          }
+        ],
+        "valueAxis": [
+          {
+            "show": false
+          }
+        ],
+        "labels": [
+          {
+            "show": true,
+            "fontSize": 9,
+            "color": {
+              "solid": {
+                "color": "#3A4A57"
+              }
+            },
+            "labelDisplayUnits": 0
+          }
+        ],
+        "legend": [
+          {
+            "show": false
+          }
+        ]
+      }
+    },
+    "barChart": {
+      "*": {
+        "categoryAxis": [
+          {
+            "show": true,
+            "showAxisTitle": false,
+            "fontSize": 9,
+            "labelColor": {
+              "solid": {
+                "color": "#5A6B78"
+              }
+            }
+          }
+        ],
+        "valueAxis": [
+          {
+            "show": false
+          }
+        ],
+        "labels": [
+          {
+            "show": true,
+            "fontSize": 9,
+            "color": {
+              "solid": {
+                "color": "#3A4A57"
+              }
+            },
+            "labelDisplayUnits": 0
+          }
+        ],
+        "legend": [
+          {
+            "show": false
+          }
+        ]
+      }
+    },
+    "lineChart": {
+      "*": {
+        "categoryAxis": [
+          {
+            "show": true,
+            "showAxisTitle": false,
+            "fontSize": 9,
+            "labelColor": {
+              "solid": {
+                "color": "#5A6B78"
+              }
+            },
+            "concatenateLabels": false
+          }
+        ],
+        "valueAxis": [
+          {
+            "show": true,
+            "showAxisTitle": false,
+            "gridlineShow": false,
+            "fontSize": 9,
+            "labelColor": {
+              "solid": {
+                "color": "#5A6B78"
+              }
+            }
+          }
+        ],
+        "legend": [
+          {
+            "show": false
+          }
+        ],
+        "labels": [
+          {
+            "show": false
+          }
+        ]
+      }
+    },
+    "scatterChart": {
+      "*": {
+        "categoryAxis": [
+          {
+            "show": true,
+            "showAxisTitle": true,
+            "fontSize": 9,
+            "labelColor": {
+              "solid": {
+                "color": "#5A6B78"
+              }
+            }
+          }
+        ],
+        "valueAxis": [
+          {
+            "show": true,
+            "showAxisTitle": true,
+            "gridlineShow": false,
+            "fontSize": 9,
+            "labelColor": {
+              "solid": {
+                "color": "#5A6B78"
+              }
+            }
+          }
+        ],
+        "categoryLabels": [
+          {
+            "show": true,
+            "fontSize": 8,
+            "color": {
+              "solid": {
+                "color": "#5A6B78"
+              }
+            }
+          }
+        ],
+        "legend": [
+          {
+            "show": false
+          }
+        ]
+      }
+    },
+    "slicer": {
+      "*": {
+        "header": [
+          {
+            "show": true,
+            "fontColor": {
+              "solid": {
+                "color": "#2B3A47"
+              }
+            },
+            "fontSize": 10
+          }
+        ],
+        "items": [
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#3A4A57"
+              }
+            },
+            "fontSize": 10
+          }
+        ]
+      }
+    },
+    "tableEx": {
+      "*": {
+        "columnHeaders": [
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "backColor": {
+              "solid": {
+                "color": "#2E5E8C"
+              }
+            },
+            "fontSize": 10,
+            "bold": true,
+            "alignment": "left"
+          }
+        ],
+        "values": [
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#2B3A47"
+              }
+            },
+            "fontSize": 10
+          }
+        ],
+        "grid": [
+          {
+            "gridVertical": false,
+            "gridHorizontal": true,
+            "gridHorizontalColor": {
+              "solid": {
+                "color": "#E6E9EE"
+              }
+            },
+            "rowPadding": 3
+          }
+        ]
+      }
+    }
+  }
+}

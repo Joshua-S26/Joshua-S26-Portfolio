@@ -1,0 +1,98 @@
+/* Olist Delivery Insights, case-study site
+   Palette matches the Power BI report: dark navy header, gold + teal accents. */
+:root{
+  --navy:#1E3A56; --navy-2:#26496f; --blue:#2E5E8C; --teal:#4C9AA5;
+  --gold:#E8A33D; --red:#C0504D; --green:#2E7D5B;
+  --ink:#22303C; --muted:#5A6B78; --line:#E3E9EF; --bg:#F4F6F9; --card:#FFFFFF;
+  --maxw:1080px; --radius:12px;
+  --shadow:0 6px 24px rgba(34,48,60,.07);
+  --font:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);color:var(--ink);background:var(--bg);line-height:1.6;font-size:17px}
+img{max-width:100%;display:block}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+
+/* Hero */
+header.hero{background:linear-gradient(135deg,var(--navy) 0%,#16293d 100%);color:#fff;padding:60px 0 40px}
+.hero .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(232,163,61,.16);
+  border:1px solid rgba(232,163,61,.4);color:#F4D59B;padding:5px 12px;border-radius:999px;font-size:.8rem;margin-bottom:18px}
+.hero h1{font-size:2.25rem;line-height:1.18;margin:0 0 14px;font-weight:700;letter-spacing:-.01em;max-width:880px}
+.hero h1 .accent{color:var(--gold)}
+.hero p.lede{font-size:1.15rem;margin:0 0 24px;max-width:760px;color:#D7E2EE}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px}
+.pill{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);
+  padding:5px 12px;border-radius:999px;font-size:.8rem;color:#Eaf1f8}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-block;padding:11px 22px;border-radius:8px;font-weight:600;font-size:.95rem;border:1px solid transparent}
+.btn-primary{background:var(--gold);color:#1E2A36}
+.btn-primary:hover{background:#f0b65c;text-decoration:none}
+.btn-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+.btn-ghost:hover{background:rgba(255,255,255,.08);text-decoration:none}
+
+/* Sections */
+section{padding:46px 0}
+section.alt{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+section h2{font-size:1.5rem;margin:0 0 6px;color:var(--ink)}
+section .sub{color:var(--muted);margin:0 0 24px;max-width:760px}
+.eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:.74rem;font-weight:700;color:var(--teal);margin:0 0 6px}
+
+/* Headline KPI band */
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px}
+.kpi .k{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;text-align:center;box-shadow:var(--shadow)}
+.kpi .k .v{font-size:1.7rem;font-weight:700;color:var(--navy)}
+.kpi .k .v.warn{color:var(--red)}
+.kpi .k .l{color:var(--muted);font-size:.85rem;margin-top:4px}
+
+/* Dashboard figure */
+figure.shot{margin:0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow)}
+figure.shot img{border-radius:8px;cursor:zoom-in;width:100%}
+figure.shot figcaption{color:var(--muted);font-size:.9rem;margin-top:10px;padding:0 4px 4px}
+.imgslot{display:flex;align-items:center;justify-content:center;text-align:center;min-height:340px;
+  border:2px dashed #cdd6df;border-radius:8px;color:var(--muted);background:#eef2f6;padding:24px;flex-direction:column;gap:6px}
+.imgslot code{background:#fff;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.85rem}
+
+/* Cards / grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.card.accent-gold{border-left:4px solid var(--gold)}
+.card.accent-red{border-left:4px solid var(--red)}
+.card.accent-teal{border-left:4px solid var(--teal)}
+.card h3{margin:0 0 8px;font-size:1.05rem}
+.card .big{font-size:1.5rem;font-weight:700;color:var(--blue);display:block;margin-bottom:4px}
+.card p{margin:0;color:var(--muted);font-size:.96rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+
+/* Approach flow */
+ol.flow{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:14px}
+ol.flow li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px 16px 58px;position:relative;box-shadow:var(--shadow)}
+ol.flow li::before{counter-increment:s;content:counter(s);position:absolute;left:16px;top:15px;
+  width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+
+/* Code */
+pre{background:#0f1b27;color:#dde7f0;padding:16px;border-radius:10px;overflow:auto;font-size:.84rem;line-height:1.5}
+code{font-family:"Cascadia Code",Consolas,Menlo,monospace}
+.tag{display:inline-block;background:#EAF1F8;color:var(--blue);border-radius:6px;padding:2px 8px;font-size:.76rem;font-weight:700;margin-right:6px}
+.mermaid{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);text-align:center}
+.note{background:#FCF6EA;border:1px solid #EFE0BE;color:#7A5A1E;border-radius:10px;padding:12px 16px;font-size:.9rem}
+
+/* Footer */
+footer{background:var(--navy);color:#cfd9e2;padding:40px 0;font-size:.92rem}
+footer a{color:#9ec3e6}
+footer .name{color:#fff;font-size:1.05rem;font-weight:700}
+footer .fine{margin-top:16px;color:#8ea3b5;font-size:.82rem}
+
+/* Lightbox */
+.lb{position:fixed;inset:0;background:rgba(15,25,38,.92);display:none;align-items:center;justify-content:center;z-index:50;padding:24px;cursor:zoom-out}
+.lb.open{display:flex}
+.lb img{max-width:96vw;max-height:94vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+
+@media(max-width:720px){
+  body{font-size:16px}
+  .hero h1{font-size:1.6rem}
+  .two{grid-template-columns:1fr}
+  section{padding:36px 0}
+}

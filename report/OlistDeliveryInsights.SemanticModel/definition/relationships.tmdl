@@ -1,0 +1,24 @@
+relationship 6bd147ca-0b9f-46fb-99c3-a58b6064aedb
+	fromColumn: Fact_Orders.purchase_date
+	toColumn: Dim_Date.Date
+
+relationship 952a3e52-7f57-4a0f-abd0-c129cbe3dc13
+	fromColumn: Fact_OrderItems.purchase_date
+	toColumn: Dim_Date.Date
+
+relationship d7b6add9-8ff8-4362-b4af-b694bb3afb83
+	fromColumn: Fact_Orders.customer_id
+	toColumn: Dim_Customer.customer_id
+
+relationship c8e4c364-aa4f-4ce8-8360-123e0d36f7aa
+	fromColumn: Fact_OrderItems.customer_id
+	toColumn: Dim_Customer.customer_id
+
+relationship 556e7b3f-8f56-41eb-8764-0d11fc837d45
+	fromColumn: Fact_OrderItems.product_id
+	toColumn: Dim_Product.product_id
+
+relationship 17761d98-6dc0-475c-a36e-1add07800c7c
+	fromColumn: Fact_OrderItems.seller_id
+	toColumn: Dim_Seller.seller_id
+

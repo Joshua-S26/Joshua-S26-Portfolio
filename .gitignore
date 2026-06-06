@@ -1,0 +1,28 @@
+# ---- Olist source data (download from Kaggle; not redistributed here — see ATTRIBUTION.md) ----
+report/data/*.csv
+report/data/*.zip
+
+# ---- Power BI / PBIP local & cached artifacts (keep the text definitions; drop the caches) ----
+*.pbix
+.pbi/
+**/.pbi/
+*.abf
+**/*.abf
+**/cache.abf
+
+# ---- v1 leftovers / scratch not part of the published project ----
+olist_exec_dashboard_mockup.html
+docs/assets/
+**/_backup_layout_*/
+**/_backup_unapplied/
+# stray source screenshot; the canonical copy lives in docs/img/hero-dashboard.png
+/Portfolio Screenshot.png
+
+# ---- OS / editor noise ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/

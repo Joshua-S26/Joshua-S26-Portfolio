@@ -1,0 +1,98 @@
+/// Order-line fact: one row per order line (an order can contain several items).
+/// price and freight_value live here. customer_id and purchase_date are denormalised
+/// from the order header so the conformed Customer and Date dimensions can filter
+/// this grain directly. Product and Seller relate here.
+table Fact_OrderItems
+	lineageTag: af18f26b-9f5c-45ea-b8bd-406903bfb271
+
+	column order_id
+		dataType: string
+		isHidden
+		lineageTag: 1e93ae07-c104-4978-8cf2-aeea43652be6
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_id
+		dataType: string
+		isHidden
+		lineageTag: 413e2045-4f9b-4003-a83b-d38d4c1b4180
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column seller_id
+		dataType: string
+		isHidden
+		lineageTag: f8db0163-1f84-49e4-afd0-4bc8257cf294
+		summarizeBy: none
+		sourceColumn: seller_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: string
+		isHidden
+		lineageTag: dce1d317-54e2-4c5c-a1d9-fa1cc2829ae7
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column purchase_date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: a4eff467-a541-4f59-99ba-420ce1f68ee7
+		summarizeBy: none
+		sourceColumn: purchase_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column price
+		dataType: double
+		isHidden
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: d5a3a3db-98b8-4285-bbc8-3cf564e75cd1
+		summarizeBy: sum
+		sourceColumn: price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column freight_value
+		dataType: double
+		isHidden
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 9f79e470-7e6f-4d72-9887-4109fa3cfb48
+		summarizeBy: sum
+		sourceColumn: freight_value
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	partition Fact_OrderItems = m
+		mode: import
+		source =
+				let
+				    Items = fnLoadCsv("olist_order_items_dataset.csv"),
+				    ItemsTyped = Table.TransformColumnTypes(Items, {{"price", type number}, {"freight_value", type number}}),
+				    Orders = fnLoadCsv("olist_orders_dataset.csv"),
+				    OrdersTyped = Table.TransformColumnTypes(Orders, {{"order_purchase_timestamp", type datetime}}),
+				    OrdersSel = Table.SelectColumns(OrdersTyped, {"order_id", "customer_id", "order_purchase_timestamp"}),
+				    Joined = Table.NestedJoin(ItemsTyped, {"order_id"}, OrdersSel, {"order_id"}, "O", JoinKind.Inner),
+				    Expanded = Table.ExpandTableColumn(Joined, "O", {"customer_id", "order_purchase_timestamp"}, {"customer_id", "order_purchase_timestamp"}),
+				    AddPurchaseDate = Table.AddColumn(Expanded, "purchase_date", each Date.From([order_purchase_timestamp]), type date),
+				    Selected = Table.SelectColumns(AddPurchaseDate, {"order_id", "product_id", "seller_id", "customer_id", "purchase_date", "price", "freight_value"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"order_id", type text}, {"product_id", type text}, {"seller_id", type text}, {"customer_id", type text}, {"price", type number}, {"freight_value", type number}})
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,56 @@
+/// Customer dimension. One row per customer_id (the per-order customer key in Olist).
+/// customer_unique_id identifies the underlying person across orders. Conformed
+/// dimension: filters both fact tables. State drives the geographic analysis.
+table Dim_Customer
+	lineageTag: 516901eb-9f14-4fb7-be5d-339d80c3800d
+
+	column customer_id
+		dataType: string
+		isHidden
+		isKey
+		lineageTag: b267f422-b282-4aee-829a-78702057330b
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_unique_id
+		dataType: string
+		isHidden
+		lineageTag: fa25d740-875c-4a84-a1b5-7d64d317c057
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer City'
+		dataType: string
+		lineageTag: 6e5214f5-2ca2-4638-bd4a-1563f0b058b8
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: Customer City
+
+		annotation SummarizationSetBy = None
+
+	column 'Customer State'
+		dataType: string
+		lineageTag: 9f9ec3b2-5751-42cd-bc7b-933fd52c4567
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: Customer State
+
+		annotation SummarizationSetBy = None
+
+	partition Dim_Customer = m
+		mode: import
+		source =
+				let
+				    Source = fnLoadCsv("olist_customers_dataset.csv"),
+				    Selected = Table.SelectColumns(Source, {"customer_id", "customer_unique_id", "customer_city", "customer_state"}),
+				    Typed = Table.TransformColumnTypes(Selected, {{"customer_id", type text}, {"customer_unique_id", type text}, {"customer_city", type text}, {"customer_state", type text}}),
+				    Renamed = Table.RenameColumns(Typed, {{"customer_city", "Customer City"}, {"customer_state", "Customer State"}})
+				in
+				    Renamed
+
+	annotation PBI_ResultType = Table
+

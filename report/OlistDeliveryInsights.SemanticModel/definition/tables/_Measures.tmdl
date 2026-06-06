@@ -1,0 +1,364 @@
+/// Dedicated measures table (a one-row calculated table). Holds the full measure
+/// library so the field list stays clean and every measure has a single home.
+/// Values are in Brazilian Reais (R$), the currency of the Olist dataset.
+table _Measures
+	lineageTag: 844bad21-5dfe-45bf-85ac-f35df23858d1
+
+	/// Total product revenue (sum of order-line price). Lives at the order-line grain.
+	measure 'Total Sales' = SUM ( Fact_OrderItems[price] )
+		formatString: \$#,##0
+		displayFolder: 1 Sales
+		lineageTag: 74ceb60d-d2b7-4c9b-a730-ac0b72598919
+
+	/// Total freight (shipping) charged across order lines.
+	measure 'Total Freight' = SUM ( Fact_OrderItems[freight_value] )
+		formatString: \$#,##0
+		displayFolder: 1 Sales
+		lineageTag: 8f33f4f0-0b5b-4528-bf3a-5fc811ff9dab
+
+	measure 'Order Items' = COUNTROWS ( Fact_OrderItems )
+		formatString: #,##0
+		displayFolder: 1 Sales
+		lineageTag: 2d845b71-b145-4e44-970f-511d66c316b6
+
+	measure 'Total Orders' = COUNTROWS ( Fact_Orders )
+		formatString: #,##0
+		displayFolder: 1 Sales
+		lineageTag: 7fe767d6-6148-412e-96c0-9368cb0376bd
+
+	/// Average Order Value = revenue per order.
+	measure AOV = DIVIDE ( [Total Sales], [Total Orders] )
+		formatString: \$#,##0.00
+		displayFolder: 1 Sales
+		lineageTag: 764b4974-a291-42fb-b43d-64d3b718df45
+
+	measure 'Freight % of Sales' = DIVIDE ( [Total Freight], [Total Sales] )
+		formatString: 0.0%
+		displayFolder: 1 Sales
+		lineageTag: 9276a0dc-c8a2-4c5c-be82-faff9e25a8d7
+
+	/// Same period last year (requires the marked Date table).
+	measure 'Sales PY' = CALCULATE ( [Total Sales], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: \$#,##0
+		displayFolder: 2 Time Intelligence
+		lineageTag: 49f87b33-1917-481f-90d2-b692b8d792b1
+
+	measure 'Sales YoY %' = DIVIDE ( [Total Sales] - [Sales PY], [Sales PY] )
+		formatString: 0.0%
+		displayFolder: 2 Time Intelligence
+		lineageTag: e22a0ba2-cb98-4b05-89df-6913ce9ac2e3
+
+	measure 'Sales YTD' = TOTALYTD ( [Total Sales], Dim_Date[Date] )
+		formatString: \$#,##0
+		displayFolder: 2 Time Intelligence
+		lineageTag: 2b4e6529-e2a7-44de-a438-83d8a87972c5
+
+	/// Share of the selected category against all categories.
+	measure '% Sales of Total' = DIVIDE ( [Total Sales], CALCULATE ( [Total Sales], ALL ( Dim_Product[Category] ) ) )
+		formatString: 0.0%
+		displayFolder: 3 Category
+		lineageTag: 2277fd2f-56e4-427f-9056-c7c22805b361
+
+	measure 'Category Rank' = RANKX ( ALL ( Dim_Product[Category] ), [Total Sales],, DESC )
+		formatString: #,##0
+		displayFolder: 3 Category
+		lineageTag: b7a6a951-030e-4179-b24b-6aa7bc37fe0b
+
+	/// Average delivery time in days (delivered orders only; blanks ignored).
+	measure 'Avg Delivery Days' = AVERAGE ( Fact_Orders[delivery_days] )
+		formatString: 0.0
+		displayFolder: 4 Delivery & Satisfaction
+		lineageTag: 13dbbe69-02b3-488f-9008-e902fabee3fc
+
+	/// Orders that actually reached the customer (have a delivery time).
+	measure 'Delivered Orders' = CALCULATE ( [Total Orders], NOT ISBLANK ( Fact_Orders[delivery_days] ) )
+		formatString: #,##0
+		displayFolder: 4 Delivery & Satisfaction
+		lineageTag: c7efbeb3-03d9-4ee0-b2f0-cce075dc3a8b
+
+	measure 'Late Orders' = CALCULATE ( [Total Orders], Fact_Orders[is_late] = TRUE () )
+		formatString: #,##0
+		displayFolder: 4 Delivery & Satisfaction
+		lineageTag: f57b8fcf-b39c-4cbf-9f67-5d905b637dcc
+
+	/// Late share of delivered orders.
+	measure '% Late' = DIVIDE ( [Late Orders], [Delivered Orders] )
+		formatString: 0.0%
+		displayFolder: 4 Delivery & Satisfaction
+		lineageTag: 7e03f585-297e-4696-bf3c-793dea615726
+
+	measure 'On-Time %' = 1 - [% Late]
+		formatString: 0.0%
+		displayFolder: 4 Delivery & Satisfaction
+		lineageTag: 3f4aacc2-21b6-40f1-a498-2c8494d863f1
+
+	measure 'Avg Review Score' = AVERAGE ( Fact_Orders[review_score] )
+		formatString: 0.00
+		displayFolder: 4 Delivery & Satisfaction
+		lineageTag: 43765167-ec8a-403c-9ca9-8de73f79dd64
+
+	/// Share of reviewed orders rated 1 or 2 stars.
+	measure '% Low Reviews' =
+			DIVIDE (
+			    CALCULATE ( [Total Orders], Fact_Orders[review_score] <= 2 ),
+			    CALCULATE ( [Total Orders], NOT ISBLANK ( Fact_Orders[review_score] ) )
+			)
+		formatString: 0.0%
+		displayFolder: 4 Delivery & Satisfaction
+		lineageTag: 01699bb0-7937-446a-a7a7-a36168b4867b
+
+	/// HEADLINE MEASURE. Revenue tied to orders that arrived late OR were rated <= 2
+	/// stars. [Total Sales] lives on Fact_OrderItems; the risk flags live on
+	/// Fact_Orders. There is deliberately no physical relationship between the two
+	/// facts (it would create an ambiguous filter path with the conformed Date and
+	/// Customer dimensions). TREATAS projects the risky order_ids onto the order-line
+	/// grain as a virtual relationship, so the revenue is summed at the correct grain.
+	measure 'Revenue at Risk' =
+			VAR RiskyOrders =
+			    CALCULATETABLE (
+			        VALUES ( Fact_Orders[order_id] ),
+			        FILTER (
+			            Fact_Orders,
+			            Fact_Orders[is_late] = TRUE ()
+			                || Fact_Orders[review_score] <= 2
+			        )
+			    )
+			RETURN
+			    CALCULATE (
+			        [Total Sales],
+			        TREATAS ( RiskyOrders, Fact_OrderItems[order_id] )
+			    )
+		formatString: \$#,##0
+		displayFolder: 5 Revenue at Risk
+		lineageTag: 4a621ae1-e61f-47fb-8c96-28e510d64de4
+
+	measure '% Revenue at Risk' = DIVIDE ( [Revenue at Risk], [Total Sales] )
+		formatString: 0.0%
+		displayFolder: 5 Revenue at Risk
+		lineageTag: 7cdec37f-6406-4085-bd9e-c8fd7c08bd7e
+
+	/// Average review score for orders that arrived late. Used by the dynamic insight strip.
+	measure 'Avg Review (Late)' = CALCULATE ( [Avg Review Score], Fact_Orders[is_late] = TRUE () )
+		formatString: 0.00
+		displayFolder: 4 Delivery & Satisfaction
+		lineageTag: a1b2c3d4-0001-4a00-9000-000000000001
+
+	/// Average review score for orders that arrived on time. Used by the dynamic insight strip.
+	measure 'Avg Review (On-Time)' = CALCULATE ( [Avg Review Score], Fact_Orders[is_late] = FALSE () )
+		formatString: 0.00
+		displayFolder: 4 Delivery & Satisfaction
+		lineageTag: a1b2c3d4-0002-4a00-9000-000000000002
+
+	/// Prior-year revenue at risk. Target line for the Revenue at Risk KPI visual.
+	measure 'Revenue at Risk PY' = CALCULATE ( [Revenue at Risk], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: \$#,##0
+		displayFolder: 5 Revenue at Risk
+		lineageTag: a1b2c3d4-0004-4a00-9000-000000000004
+
+	/// Dynamic narrative for the executive callout. Rebuilds with every slicer selection.
+	measure 'Insight Narrative' = "• Late deliveries are the core risk. Late orders average " & FORMAT ( [Avg Review (Late)], "0.0" ) & "★ versus " & FORMAT ( [Avg Review (On-Time)], "0.0" ) & "★ on-time, a " & FORMAT ( [Avg Review (On-Time)] - [Avg Review (Late)], "0.0" ) & "★ satisfaction gap. " & UNICHAR(10) & "• $"& FORMAT ( DIVIDE ( [Revenue at Risk], 1000000 ), "0.0" ) & "M (" & FORMAT ( [% Revenue at Risk], "0%" ) & " of sales) is exposed in late or low-rated orders. Remote North waits longest. Lifting on-time delivery is the fastest lever to protect repeat revenue."
+		displayFolder: 5 Revenue at Risk
+		lineageTag: a1b2c3d4-0005-4a00-9000-000000000005
+
+	/// --- Prior-year comparisons (used by the KPI cards). All vs. same period last year. ---
+	measure 'Total Orders PY' = CALCULATE ( [Total Orders], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: #,##0
+		displayFolder: 6 vs Prior Year
+		lineageTag: a4fb6655-fc4a-45a2-a3d4-6f25b9ba975d
+
+	measure 'Orders YoY %' = DIVIDE ( [Total Orders] - [Total Orders PY], [Total Orders PY] )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 6 vs Prior Year
+		lineageTag: c2035957-d27a-412e-a639-abb3dce90bcc
+
+	measure 'AOV PY' = CALCULATE ( [AOV], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: \$#,##0.00
+		displayFolder: 6 vs Prior Year
+		lineageTag: fd5786ee-b821-4565-9059-b6d8a34e701c
+
+	measure 'AOV YoY %' = DIVIDE ( [AOV] - [AOV PY], [AOV PY] )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 6 vs Prior Year
+		lineageTag: 2bb5f44f-eae8-41e1-9267-a52fb4c3a8e6
+
+	measure 'Avg Review PY' = CALCULATE ( [Avg Review Score], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: 0.00
+		displayFolder: 6 vs Prior Year
+		lineageTag: f98d73d5-bced-4175-82c3-638a59e9e381
+
+	measure 'Avg Review YoY' = [Avg Review Score] - [Avg Review PY]
+		formatString: +0.00;-0.00;0.00
+		displayFolder: 6 vs Prior Year
+		lineageTag: 44ca332b-4bc8-4c82-86f6-5b70f58f5e4f
+
+	measure '% Late PY' = CALCULATE ( [% Late], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: 0.0%
+		displayFolder: 6 vs Prior Year
+		lineageTag: df5333dd-72bf-484f-8d82-b41ea80d257c
+
+	measure '% Late YoY (pp)' = ( [% Late] - [% Late PY] ) * 100
+		formatString: +0.0;-0.0;0.0
+		displayFolder: 6 vs Prior Year
+		lineageTag: 3dee56cd-e094-476d-b72d-e0c5ada59682
+
+	measure 'Avg Delivery Days PY' = CALCULATE ( [Avg Delivery Days], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: 0.0
+		displayFolder: 6 vs Prior Year
+		lineageTag: 4b0fe2b2-302f-4b89-90fe-179073b98aa5
+
+	measure 'Avg Delivery Days YoY' = [Avg Delivery Days] - [Avg Delivery Days PY]
+		formatString: +0.0;-0.0;0.0
+		displayFolder: 6 vs Prior Year
+		lineageTag: 8c93d9b7-1b08-4e24-a93c-8010f187a5ae
+
+	measure 'On-Time % PY' = CALCULATE ( [On-Time %], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: 0.0%
+		displayFolder: 6 vs Prior Year
+		lineageTag: 3ee06f8e-be11-44e5-8f4a-1b07f4134207
+
+	/// On-time delivery change vs prior year, in percentage points. KPI card reference value.
+	measure 'On-Time % YoY (pp)' = ( [On-Time %] - [On-Time % PY] ) * 100
+		formatString: +0.0;-0.0;0.0
+		displayFolder: 6 vs Prior Year
+		lineageTag: a1b2c3d4-0003-4a00-9000-000000000003
+
+	/// --- KPI card helpers: arrow + delta labels and sign-based colours for conditional formatting. ---
+	measure 'Sales YoY Label' = VAR v = [Sales YoY %] RETURN IF ( ISBLANK ( v ), "-", IF ( v >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( v ), "0.0%" ) & " vs PY" )
+		displayFolder: 7 KPI Helpers
+		lineageTag: a1b2c3d4-0010-4a00-9000-000000000010
+
+	measure 'Orders YoY Label' = VAR v = [Orders YoY %] RETURN IF ( ISBLANK ( v ), "-", IF ( v >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( v ), "0.0%" ) & " vs PY" )
+		displayFolder: 7 KPI Helpers
+		lineageTag: a1b2c3d4-0011-4a00-9000-000000000011
+
+	measure 'AOV YoY Label' = VAR v = [AOV YoY %] RETURN IF ( ISBLANK ( v ), "-", IF ( v >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( v ), "0.0%" ) & " vs PY" )
+		displayFolder: 7 KPI Helpers
+		lineageTag: a1b2c3d4-0012-4a00-9000-000000000012
+
+	measure 'On-Time YoY Label' = VAR v = [On-Time % YoY (pp)] RETURN IF ( ISBLANK ( v ), "-", IF ( v >= 0, "▲ ", "▼ " ) & FORMAT ( ABS ( v ), "0.0" ) & " pp vs PY" )
+		displayFolder: 7 KPI Helpers
+		lineageTag: a1b2c3d4-0013-4a00-9000-000000000013
+
+	measure 'Rev at Risk YoY Label' = VAR v = DIVIDE ( [Revenue at Risk] - [Revenue at Risk PY], [Revenue at Risk PY] ) RETURN IF ( ISBLANK ( v ), "-", IF ( v <= 0, "▼ ", "▲ " ) & FORMAT ( ABS ( v ), "0.0%" ) & " vs PY" )
+		displayFolder: 7 KPI Helpers
+		lineageTag: a1b2c3d4-0014-4a00-9000-000000000014
+
+	measure 'Sales YoY Color' = IF ( [Sales YoY %] >= 0, "#2E7D5B", "#C0504D" )
+		displayFolder: 7 KPI Helpers
+		lineageTag: a1b2c3d4-0020-4a00-9000-000000000020
+
+	measure 'Orders YoY Color' = IF ( [Orders YoY %] >= 0, "#2E7D5B", "#C0504D" )
+		displayFolder: 7 KPI Helpers
+		lineageTag: a1b2c3d4-0021-4a00-9000-000000000021
+
+	measure 'AOV YoY Color' = IF ( [AOV YoY %] >= 0, "#2E7D5B", "#C0504D" )
+		displayFolder: 7 KPI Helpers
+		lineageTag: a1b2c3d4-0022-4a00-9000-000000000022
+
+	measure 'On-Time YoY Color' = IF ( [On-Time % YoY (pp)] >= 0, "#2E7D5B", "#C0504D" )
+		displayFolder: 7 KPI Helpers
+		lineageTag: a1b2c3d4-0023-4a00-9000-000000000023
+
+	measure 'Rev at Risk Color' = IF ( [Revenue at Risk] <= [Revenue at Risk PY], "#2E7D5B", "#C0504D" )
+		displayFolder: 7 KPI Helpers
+		lineageTag: a1b2c3d4-0024-4a00-9000-000000000024
+
+	/// --- KPI visual indicators (year-to-date) + prior-year YTD targets. ---
+	/// The KPI visual shows the value at the LAST trend point; a YTD measure makes that
+	/// the full accumulated total for the selected year, with a rising trend line.
+	measure 'Orders YTD' = TOTALYTD ( [Total Orders], Dim_Date[Date] )
+		formatString: #,##0
+		displayFolder: 8 KPI (YTD)
+		lineageTag: a1b2c3d4-0030-4a00-9000-000000000030
+
+	measure 'AOV YTD' = DIVIDE ( [Sales YTD], [Orders YTD] )
+		formatString: \$#,##0.00
+		displayFolder: 8 KPI (YTD)
+		lineageTag: a1b2c3d4-0031-4a00-9000-000000000031
+
+	measure 'On-Time % YTD' =
+			VAR d = TOTALYTD ( [Delivered Orders], Dim_Date[Date] )
+			VAR l = TOTALYTD ( [Late Orders], Dim_Date[Date] )
+			RETURN DIVIDE ( d - l, d )
+		formatString: 0.0%
+		displayFolder: 8 KPI (YTD)
+		lineageTag: a1b2c3d4-0032-4a00-9000-000000000032
+
+	measure 'Revenue at Risk YTD' = TOTALYTD ( [Revenue at Risk], Dim_Date[Date] )
+		formatString: \$#,##0
+		displayFolder: 8 KPI (YTD)
+		lineageTag: a1b2c3d4-0033-4a00-9000-000000000033
+
+	measure 'Sales YTD PY' = CALCULATE ( [Sales YTD], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: \$#,##0
+		displayFolder: 8 KPI (YTD)
+		lineageTag: a1b2c3d4-0034-4a00-9000-000000000034
+
+	measure 'Orders YTD PY' = CALCULATE ( [Orders YTD], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: #,##0
+		displayFolder: 8 KPI (YTD)
+		lineageTag: a1b2c3d4-0035-4a00-9000-000000000035
+
+	measure 'AOV YTD PY' = CALCULATE ( [AOV YTD], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: \$#,##0.00
+		displayFolder: 8 KPI (YTD)
+		lineageTag: a1b2c3d4-0036-4a00-9000-000000000036
+
+	measure 'On-Time % YTD PY' = CALCULATE ( [On-Time % YTD], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: 0.0%
+		displayFolder: 8 KPI (YTD)
+		lineageTag: a1b2c3d4-0037-4a00-9000-000000000037
+
+	measure 'Revenue at Risk YTD PY' = CALCULATE ( [Revenue at Risk YTD], SAMEPERIODLASTYEAR ( Dim_Date[Date] ) )
+		formatString: \$#,##0
+		displayFolder: 8 KPI (YTD)
+		lineageTag: a1b2c3d4-0038-4a00-9000-000000000038
+
+	measure 'Sales PY (Year)' = CALCULATE ( [Total Sales], DATEADD ( Dim_Date[Date], -1, YEAR ) )
+		formatString: \$#,##0
+		displayFolder: 6 vs Prior Year
+		lineageTag: 0bd80863-459e-4abb-adf1-4d253d6850f4
+
+	/// --- KPI targets (illustrative business goals, edit the numbers to taste). ---
+	/// These populate each KPI visual's Target goals well so it shows the goal + green/red deviation.
+	measure 'Sales Target' = 5000000
+		formatString: \$#,##0
+		displayFolder: 9 Targets
+		lineageTag: a1b2c3d4-0040-4a00-9000-000000000040
+
+	measure 'Orders Target' = 50000
+		formatString: #,##0
+		displayFolder: 9 Targets
+		lineageTag: a1b2c3d4-0041-4a00-9000-000000000041
+
+	measure 'AOV Target' = 120
+		formatString: \$#,##0.00
+		displayFolder: 9 Targets
+		lineageTag: a1b2c3d4-0042-4a00-9000-000000000042
+
+	measure 'On-Time Target' = 0.93
+		formatString: 0.0%
+		displayFolder: 9 Targets
+		lineageTag: a1b2c3d4-0043-4a00-9000-000000000043
+
+	measure 'Revenue at Risk Target' = 2500000
+		formatString: \$#,##0
+		displayFolder: 9 Targets
+		lineageTag: a1b2c3d4-0044-4a00-9000-000000000044
+
+	column Value
+		isHidden
+		formatString: 0
+		lineageTag: 95a25a56-61ef-44ff-8a1d-13a6cfdaaee6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Value]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = calculated
+		mode: import
+		source = {1}
+
+	annotation PBI_ResultType = Table
+

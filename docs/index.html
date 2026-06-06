@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Olist Delivery Insights | Power BI Case Study | Joshua Short</title>
+<meta name="description" content="A single-page Power BI executive dashboard and case study: how late deliveries lower review scores and put about 21% of marketplace revenue at risk on Brazil's Olist, and where to fix it." />
+<meta property="og:title" content="Olist Delivery Insights | Power BI Case Study" />
+<meta property="og:description" content="Late deliveries put about $2.9M (21% of sales) of repeat revenue at risk. A Power BI report built as code (TMDL + PBIR)." />
+<meta property="og:type" content="website" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ============================= HERO ============================= -->
+<header class="hero">
+  <div class="wrap">
+    <div class="badge">Power BI · Analytics Engineering · Case study</div>
+    <h1>Late deliveries put <span class="accent">about $2.9M (21% of sales)</span> of repeat revenue at risk.
+      On-time delivery is the fastest lever to protect it.<!-- [confirm] $ figure --></h1>
+    <p class="lede">A single-page executive dashboard on Brazil's Olist marketplace (about 100K orders) that ties
+      delivery performance to customer satisfaction and puts a dollar figure on the exposure. Built as code in
+      Power BI, with the semantic model in TMDL and the report in PBIR.</p>
+    <div class="pills">
+      <span class="pill">Power BI</span><span class="pill">DAX</span><span class="pill">Power Query (M)</span>
+      <span class="pill">Star schema · TMDL</span><span class="pill">PBIR (report as code)</span>
+      <span class="pill">Microsoft Fabric · PySpark</span>
+    </div>
+    <div class="cta">
+      <a class="btn btn-primary" href="#dashboard">See the dashboard ↓</a>
+      <a class="btn btn-ghost" href="https://github.com/Joshua-S26/PBI-Portfolio" target="_blank" rel="noopener">Source &amp; model on GitHub</a>
+    </div>
+  </div>
+</header>
+
+<!-- ====================== HEADLINE NUMBERS ======================= -->
+<section class="alt">
+  <div class="wrap">
+    <p class="eyebrow">Headline findings</p>
+    <h2>The numbers that frame the story</h2>
+    <p class="sub">Across about 99K orders (Sep 2016 to Oct 2018). The live dashboard defaults to the latest year; the figures below are the full-history totals.</p>
+    <div class="kpi">
+      <!-- [confirm] every value in this band against the model before publish -->
+      <div class="k"><div class="v">$13.6M</div><div class="l">Total sales (99,441 orders)</div></div>
+      <div class="k"><div class="v">8.1%</div><div class="l">Orders delivered late</div></div>
+      <div class="k"><div class="v">4.2 → 2.6</div><div class="l">Avg review: on-time vs late (stars)</div></div>
+      <div class="k"><div class="v warn">$2.86M</div><div class="l">Revenue at risk (about 21% of sales)</div></div>
+    </div>
+    <p class="note" style="margin-top:16px">Figures are in Brazilian Reais (R$), the Olist dataset's currency. The
+      dollar sign is used here for readability; these are not US dollars.</p>
+  </div>
+</section>
+
+<!-- ======================= THE QUESTION ========================== -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Business problem</p>
+    <h2>The driving question:</h2>
+    <div class="card accent-gold">
+      <p style="color:var(--ink);font-size:1.12rem;margin:0">
+        “Late deliveries lower review scores and put repeat revenue at risk.
+        <strong>Where</strong> is it happening, <strong>why</strong>, and <strong>how much</strong> revenue is exposed?”</p>
+    </div>
+    <p class="sub" style="margin-top:18px">On a marketplace, a late delivery becomes a 1- or 2-star review, and a bad
+      first experience is what stops people from buying again. The dashboard answers that question and attaches a dollar
+      figure to the risk so it can be prioritised.</p>
+  </div>
+</section>
+
+<!-- ========================= APPROACH ============================ -->
+<section class="alt">
+  <div class="wrap">
+    <p class="eyebrow">Approach</p>
+    <h2>Built as code, modelled at the right grain</h2>
+    <p class="sub">The whole project is authored in Power BI Desktop developer mode, so every table, measure, and visual
+      is a plain-text file that diffs and reviews like source code.</p>
+    <ol class="flow">
+      <li><strong>Model the grain correctly.</strong> Two fact tables, orders (header) and order items (lines), share
+        conformed Date and Customer dimensions. Revenue lives on the line grain; delivery and satisfaction live on the
+        order grain.</li>
+      <li><strong>Shape the data in Power Query (M).</strong> Derive <code>delivery_days</code> and an
+        <code>is_late</code> flag from delivered-versus-estimated dates, attach the latest review per order, and
+        translate categories to English.</li>
+      <li><strong>Write an explicit DAX measure library.</strong> No implicit measures. Everything is named, formatted,
+        and foldered, including the headline Revenue at Risk.</li>
+      <li><strong>Tell one decisive story on one page.</strong> A KPI strip with targets, a delivery-versus-rating
+        scatter, a state scorecard, and a dynamic key-insight line, each earning its place.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ========================= DASHBOARD =========================== -->
+<section id="dashboard">
+  <div class="wrap">
+    <p class="eyebrow">The dashboard</p>
+    <h2>Olist Delivery Insights, executive overview</h2>
+    <p class="sub">One page, designed for a five-second read at the top and depth on the way down. Click the image to enlarge.</p>
+    <figure class="shot">
+      <!-- ============================================================ -->
+      <!-- SCREENSHOT SLOT: save the dashboard PNG to docs/img/hero-dashboard.png -->
+      <!-- (full-resolution export from Power BI Desktop; see capture steps) -->
+      <!-- ============================================================ -->
+      <img src="img/hero-dashboard.png"
+           alt="Olist Delivery Insights dashboard: a KPI strip (Total sales, Orders, Avg order value, On-time delivery, Revenue at risk) each with a goal indicator; a scatter of average review score versus average delivery days with one bubble per state; a state scorecard table with conditional formatting; and a key-insights bar."
+           loading="lazy"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+      <div class="imgslot" style="display:none">
+        <strong>Hero screenshot goes here</strong>
+        <span>Save the dashboard PNG as <code>docs/img/hero-dashboard.png</code></span>
+      </div>
+      <figcaption><strong>How to read it.</strong> The KPI strip shows each headline metric against a target (green is
+        ahead, red is behind). The scatter is the proof: as average delivery days rise (moving right), average review
+        score falls (moving down), with the remote northern states sitting in the slow, low-rated corner. The state
+        scorecard ranks every state by sales and by Revenue at Risk, and the key-insight bar restates the takeaway as
+        you filter.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ========================== INSIGHTS =========================== -->
+<section class="alt">
+  <div class="wrap">
+    <p class="eyebrow">Key insights</p>
+    <h2>What the data says</h2>
+    <p class="sub">Each finding is visible on the dashboard above.</p>
+    <div class="grid">
+      <!-- [confirm] all numbers in these cards -->
+      <div class="card accent-teal"><span class="big">4.2 → 2.6★</span><h3>Delivery time predicts ratings</h3>
+        <p>Average review falls from about 4.2 stars on on-time orders to about 2.6 on late ones, roughly a 1.6-star
+          penalty. Lateness is the clearest driver of a bad review.</p></div>
+      <div class="card accent-gold"><span class="big">North / Northeast</span><h3>Hot-spots are the remote states</h3>
+        <p>The highest late rates sit in the northern and northeastern states furthest from the São Paulo seller base,
+          where delivery runs about 19 to 23 days against roughly 12 nationally. High-volume Rio de Janeiro is elevated too.</p></div>
+      <div class="card accent-red"><span class="big">$2.86M</span><h3>The money at stake</h3>
+        <p>Revenue tied to orders that were late or rated 2 stars or below is about $2.86M, roughly
+          <strong>21% of total sales</strong>. That is the repeat-purchase revenue most exposed by poor delivery.</p></div>
+      <div class="card"><span class="big">On-time %</span><h3>The fastest lever</h3>
+        <p>Because lateness drives both ratings and the at-risk revenue, lifting on-time delivery toward the goal is the
+          highest-leverage move, more than discounts or assortment changes.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= DATA MODEL ========================== -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Data model</p>
+    <h2>A star schema with two grains</h2>
+    <p class="sub">Two fact tables at different grains, sharing conformed Date and Customer dimensions. This is the
+      strongest modeling signal, because it forces correct grain handling.</p>
+    <div class="mermaid">
+erDiagram
+    Dim_Date     ||--o{ Fact_Orders : "purchase_date"
+    Dim_Date     ||--o{ Fact_OrderItems : "purchase_date"
+    Dim_Customer ||--o{ Fact_Orders : "customer_id"
+    Dim_Customer ||--o{ Fact_OrderItems : "customer_id"
+    Dim_Product  ||--o{ Fact_OrderItems : "product_id"
+    Dim_Seller   ||--o{ Fact_OrderItems : "seller_id"
+    Fact_Orders {
+      string order_id
+      int review_score
+      int delivery_days
+      bool is_late
+    }
+    Fact_OrderItems {
+      decimal price
+      decimal freight_value
+    }
+    </div>
+    <p class="sub" style="margin-top:16px">Date and Customer are <strong>conformed</strong>, so they filter both facts.
+      Product and Seller describe order lines, so they relate to <code>Fact_OrderItems</code> only. There is no physical
+      relationship between the two facts on purpose, because that would create an ambiguous filter path. The cross-grain
+      link is made virtually in DAX, only where it is needed (see Revenue at Risk).</p>
+  </div>
+</section>
+
+<!-- =========================== KEY DAX =========================== -->
+<section class="alt">
+  <div class="wrap">
+    <p class="eyebrow">Key DAX</p>
+    <h2>The measures that do the work</h2>
+    <p class="sub"></p>
+    <div class="two" style="align-items:start">
+      <div>
+        <h3 style="margin:0 0 8px">Revenue at Risk, the cross-grain headline measure</h3>
+        <p style="color:var(--muted);margin:0 0 10px">Total Sales lives on the line fact; the risk flags live on the
+          order fact. <code>TREATAS</code> projects the risky order IDs onto the line grain as a virtual relationship,
+          so revenue is summed at the correct grain with no ambiguity.</p>
+<pre><code>Revenue at Risk =
+VAR RiskyOrders =
+    CALCULATETABLE (
+        VALUES ( Fact_Orders[order_id] ),
+        FILTER ( Fact_Orders,
+            Fact_Orders[is_late] = TRUE () || Fact_Orders[review_score] &lt;= 2 )
+    )
+RETURN
+    CALCULATE ( [Total Sales],
+        TREATAS ( RiskyOrders, Fact_OrderItems[order_id] ) )</code></pre>
+      </div>
+      <div>
+        <h3 style="margin:0 0 8px">On-time rate and year-to-date</h3>
+        <p style="color:var(--muted);margin:0 0 10px">On-time % is measured over <em>delivered</em> orders so
+          undelivered ones do not dilute it. The KPI tiles use year-to-date indicators against prior year and target.</p>
+<pre><code>% Late   = DIVIDE ( [Late Orders], [Delivered Orders] )
+On-Time % = 1 - [% Late]
+
+Sales YTD = TOTALYTD ( [Total Sales], Dim_Date[Date] )
+Sales YoY % =
+    DIVIDE ( [Total Sales] - [Sales PY], [Sales PY] )</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== IMPACT / NEXT ========================== -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Impact &amp; what's next</p>
+    <h2>From insight to action</h2>
+    <div class="two">
+      <div class="card accent-gold"><h3>Recommendation</h3>
+        <p>Set delivery-time SLAs by region and prioritise seller onboarding or forward-stocking in the highest-risk
+          northern states, plus high-volume Rio de Janeiro. Because about $2.86M (21% of revenue) is tied to late or
+          low-rated orders, even a modest cut in the late rate protects that revenue and the repeat purchases behind it.
+          The state scorecard makes the worklist obvious: sort by Revenue at Risk and work top down.</p></div>
+      <div class="card accent-teal"><h3>What I'd do next</h3>
+        <p>Add a returning-customer cohort (via <code>customer_unique_id</code>) to turn "revenue at risk" into a
+          measured churn number, split lateness into seller handling versus carrier transit, and promote the model to a
+          governed Fabric medallion pipeline with scheduled refresh (see the engineering deep-dive in the repo).</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= HOW BUILT =========================== -->
+<section class="alt">
+  <div class="wrap">
+    <p class="eyebrow">How it's built</p>
+    <h2>Everything in the repo, diffable as text</h2>
+    <div class="grid">
+      <div class="card"><h3><span class="tag">TMDL</span>Semantic model</h3><p>Tables, relationships, the Power Query (M)
+        ingestion, and the full DAX library, all plain-text TMDL.</p></div>
+      <div class="card"><h3><span class="tag">PBIR</span>Report as code</h3><p>The page and every visual is an individual
+        JSON file in the enhanced report format.</p></div>
+      <div class="card"><h3><span class="tag">Fabric</span>Engineering deep-dive</h3><p>A medallion (bronze, silver,
+        gold) PySpark notebook plus an architecture diagram, covering the DP-600 and DP-700 skill set.</p></div>
+      <div class="card"><h3><span class="tag">SQL</span>Prep &amp; metrics</h3><p>DuckDB SQL that mirrors the model
+        transforms and recomputes every case-study number.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================== FOOTER ============================ -->
+<footer>
+  <div class="wrap">
+    <span class="name">Joshua Short</span> &nbsp;Power BI Developer · BI / Analytics Engineer<br/>
+    Microsoft Fabric certified (DP-600, DP-700) · PL-300<br/><br/>
+    <a href="https://github.com/Joshua-S26/PBI-Portfolio" target="_blank" rel="noopener">GitHub repo</a> &nbsp;·&nbsp;
+    <a href="https://www.linkedin.com/in/joshua-s26" target="_blank" rel="noopener">LinkedIn</a> &nbsp;·&nbsp;
+    <a href="mailto:jshort26@sbcglobal.net">jshort26@sbcglobal.net</a>
+    <p class="fine">Figures are in Brazilian Reais (R$), the Olist dataset's currency, shown with the dollar sign for
+      readability (not US dollars). Data: Olist Brazilian E-Commerce Public Dataset (Kaggle), used non-commercially with
+      attribution (CC BY-NC). Built with Power BI Desktop developer mode (PBIP, TMDL, PBIR).</p>
+  </div>
+</footer>
+
+<!-- Lightbox (tiny vanilla JS) -->
+<div class="lb" id="lb" aria-hidden="true"><img id="lbimg" src="" alt="" /></div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  if (window.mermaid) { mermaid.initialize({ startOnLoad: true, theme: "neutral" }); }
+  var lb = document.getElementById('lb'), lbimg = document.getElementById('lbimg');
+  document.querySelectorAll('figure.shot img').forEach(function (im) {
+    im.addEventListener('click', function () { lbimg.src = im.src; lbimg.alt = im.alt; lb.classList.add('open'); });
+  });
+  lb.addEventListener('click', function () { lb.classList.remove('open'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') lb.classList.remove('open'); });
+</script>
+</body>
+</html>
