@@ -117,7 +117,7 @@ strong, b { color: var(--ink); font-weight: 700; }
 .hero .sep { color: var(--hairline); margin: 0 .5em; }
 
 /* ---- project cards (index) ---- */
-.cards { margin: 44px 0; }
+.cards { margin: 44px auto; }
 .card {
   border: 1px solid var(--hairline);
   border-left: 3px solid var(--accent);
