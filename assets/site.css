@@ -150,6 +150,8 @@ a.card:hover .readmore { text-decoration: underline; }
 }
 .plate img { border: 1px solid var(--hairline); }
 .plate.narrow { max-width: 480px; margin-left: auto; margin-right: auto; }
+.plate.wide { width: min(1100px, 94vw); position: relative; left: 50%; transform: translateX(-50%); }
+.plate a.zoom { display: block; cursor: zoom-in; }
 .figtag {
   font-family: 'JetBrains Mono', monospace;
   font-size: .78rem;
