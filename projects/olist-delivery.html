@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Olist delivery insights: Power BI report as code</title>
+<meta name="description" content="A Power BI executive dashboard and case study on the Olist Brazilian e-commerce dataset: two fact tables, conformed dimensions, and a TREATAS-based Revenue at Risk measure.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<div class="wrap"><a class="backlink" href="../index.html">← Back to portfolio</a></div>
+
+<header class="hero wrap">
+  <p class="kicker">Power BI portfolio project · Report as code</p>
+  <h1>Olist delivery insights</h1>
+  <p class="descriptor">A Power BI executive dashboard, authored as code</p>
+  <div class="rule"></div>
+  <p class="lead">A single-page Power BI executive dashboard, plus a written case study, built on the Olist Brazilian e-commerce dataset: about 100,000 orders. It answers a real marketplace question: late deliveries lower review scores and put repeat revenue at risk, so where is it happening, why, and how much revenue is exposed.</p>
+</header>
+
+<main class="wrap">
+
+  <div class="plate">
+    <img src="../assets/olist-dashboard.png" alt="Olist Delivery Insights dashboard: a KPI strip (Total sales, Orders, Avg order value, On-time delivery, Revenue at risk) each with a goal indicator; a scatter of average review score versus average delivery days with one bubble per state; a state scorecard table with conditional formatting; and a key-insights bar.">
+    <p class="figtag"><strong>FIG. 1</strong> · Executive Overview page, captured in Power BI Desktop</p>
+  </div>
+
+  <h2>The headline finding</h2>
+  <blockquote class="finding">Late deliveries put about $2.9M (roughly 21% of sales) of repeat revenue at risk, and on-time delivery is the fastest lever to protect it.</blockquote>
+  <p>Money figures are in Brazilian Reais (R$), the dataset's currency. The dollar sign is used for readability; these are not US dollars.</p>
+
+  <h2>What the project is</h2>
+  <p>This is a personal analytics portfolio project, built on the public Olist Brazilian e-commerce dataset, not a client or employer deliverable. It pairs a single-page Power BI executive dashboard with a written case study. The dashboard is built as one decisive page: a KPI strip with targets, a delivery-versus-rating scatter, a state scorecard, and a dynamic key-insight line.</p>
+
+  <h2>Authored as code</h2>
+  <p>The report is authored as code in Power BI Desktop developer mode. The semantic model is written in TMDL (Tabular Model Definition Language), and the report is in PBIR, the enhanced report format. Every table, DAX measure, and visual is a plain-text file that can be reviewed and diffed like source code, rather than a binary. The Power BI project is named <span class="mono">OlistDeliveryInsights</span>, and the full model and report code sit in the <span class="mono">report/</span> folder of the repository.</p>
+
+  <h2>The data model</h2>
+  <p>The model is a star schema with two fact tables at different grains, the clearest modeling signal to get right: order lines for revenue, and order headers for delivery and satisfaction. Both share conformed Date and Customer dimensions. There is no direct relationship between the two fact tables; the headline measure, Revenue at Risk, links them virtually with <span class="mono">TREATAS</span>, so there is no ambiguous physical relationship.</p>
+
+  <table class="datatable">
+    <thead><tr><th>Table</th><th>Grain</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">Dim_Date</td><td>One row per calendar day</td><td>Marked as the model's date table; drives time intelligence (Year, Quarter, Month, Month Year)</td></tr>
+      <tr><td class="mono">Dim_Customer</td><td>One row per customer_id</td><td>Conformed: filters both fact tables; Customer City and Customer State drive geography</td></tr>
+      <tr><td class="mono">Dim_Product</td><td>One row per product_id</td><td>Category, translated to English; relates to order lines only</td></tr>
+      <tr><td class="mono">Dim_Seller</td><td>One row per seller_id</td><td>Seller City and Seller State; relates to order lines only</td></tr>
+      <tr><td class="mono">Fact_OrderItems</td><td>One row per order line</td><td>price and freight_value; the revenue grain</td></tr>
+      <tr><td class="mono">Fact_Orders</td><td>One row per order</td><td>Order Status, review_score, delivery_days, is_late, Delivered Date, Estimated Date; the delivery and satisfaction grain</td></tr>
+    </tbody>
+  </table>
+
+  <p>All relationships are single-direction, one to many. Both fact tables relate to <span class="mono">Dim_Date</span> on purchase_date and to <span class="mono">Dim_Customer</span> on customer_id. <span class="mono">Fact_OrderItems</span> additionally relates to <span class="mono">Dim_Product</span> on product_id and to <span class="mono">Dim_Seller</span> on seller_id.</p>
+
+  <h2>Storage and source</h2>
+  <p>Storage mode is Import. Currency is the Brazilian Real (R$). The source is nine Olist CSVs, loaded through Power Query (M) using a fnLoadCsv helper and a CsvFolder parameter, so the source folder is configurable rather than hard-coded.</p>
+
+  <h2>Explore the project</h2>
+  <p>The Power BI project, including the TMDL semantic model and the PBIR report definition, is in the <span class="mono">report/</span> folder of the repository, open to browse table by table and measure by measure.</p>
+
+  <div class="download">
+    <span class="dl-label">Power BI project (PBIP), TMDL model, PBIR report</span>
+    <a href="https://github.com/Joshua-S26/Joshua-S26-Portfolio">View on GitHub</a>
+  </div>
+
+  <p class="mnote">Tech: Power BI · DAX · Power Query (M) · TMDL · PBIR · dimensional and star-schema modeling</p>
+
+  <a class="backlink" href="../index.html">← Back to portfolio</a>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fname">Joshua Short</p>
+    <p><a href="mailto:jshort26@sbcglobal.net">jshort26@sbcglobal.net</a></p>
+    <p><a href="https://github.com/Joshua-S26">github.com/Joshua-S26</a> <span class="sep">|</span> <a href="https://www.linkedin.com/in/joshua-s26/">linkedin.com/in/joshua-s26</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

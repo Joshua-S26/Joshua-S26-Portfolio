@@ -1,0 +1,351 @@
+/* Joshua Short -- Portfolio site
+   Shared stylesheet for all pages. Light-mode "Field Schematic" tokens:
+   warm paper background, Fraunces display type, Source Sans 3 body type,
+   JetBrains Mono for kickers and labels. */
+
+:root {
+  --bg: #F7F4EC;
+  --surface: #ECE6D8;
+  --ink: #1A2430;
+  --muted: #556472;
+  --hairline: #C9C2B2;
+  --accent: #1D4E7E;
+  --writer-text: #8A5A0F;
+  --writer-fill: #C8871A;
+  --subject: #0B6690;
+  --content-width: 860px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background-color: var(--bg);
+  background-image: radial-gradient(rgba(26, 36, 48, .06) 1px, transparent 1px);
+  background-size: 5px 5px;
+  color: var(--ink);
+  font-family: 'Source Sans 3', -apple-system, Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+
+.wrap {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+main { display: block; padding-bottom: 20px; }
+
+/* ---- type ---- */
+h1, h2, h3 {
+  font-family: 'Fraunces', Georgia, serif;
+  color: var(--ink);
+  line-height: 1.15;
+}
+h1 { font-size: clamp(2.25rem, 5vw, 3.25rem); font-weight: 700; margin-bottom: .35em; }
+h2 { font-size: clamp(1.5rem, 3.4vw, 2rem); font-weight: 600; margin: 1.4em 0 .5em; }
+h3 { font-size: 1.25rem; font-weight: 600; margin: 1.6em 0 .4em; }
+
+p { margin: 0 0 1em; }
+.lead { font-size: 1.15rem; }
+
+strong, b { color: var(--ink); font-weight: 700; }
+
+.kicker {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: .8rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin: 1.6em 0 .3em;
+}
+.kicker:first-child { margin-top: 0; }
+
+.mono {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: .92em;
+  background: var(--surface);
+  padding: .08em .35em;
+  border-radius: 3px;
+}
+
+/* hero rule: 2px accent bar, ~160px wide, ends in a filled dot */
+.rule {
+  height: 2px;
+  width: 160px;
+  background: var(--accent);
+  position: relative;
+  margin: 18px 0 30px;
+}
+.rule::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ---- hero (page headers) ---- */
+.hero { padding: 48px 0 10px; }
+.hero .descriptor {
+  font-family: 'Fraunces', serif;
+  font-size: 1.35rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin-top: -6px;
+}
+.hero .meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82rem;
+  color: var(--muted);
+  letter-spacing: .02em;
+  line-height: 1.9;
+}
+.hero .meta a { color: var(--muted); }
+.hero .meta a:hover { color: var(--accent); }
+.hero .sep { color: var(--hairline); margin: 0 .5em; }
+
+/* ---- project cards (index) ---- */
+.cards { margin: 44px 0; }
+.card {
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--accent);
+  background: var(--bg);
+  margin: 28px 0;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+.card img { border-bottom: 1px solid var(--hairline); }
+.card-body { padding: 20px 26px 26px; }
+.card .kicker { margin-top: 0; margin-bottom: 8px; }
+.card h2 { margin-top: 0; margin-bottom: 10px; font-size: 1.5rem; }
+.card p { margin-bottom: 14px; }
+.card .readmore {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+a.card:hover { border-left-color: var(--writer-text); }
+a.card:hover .readmore { text-decoration: underline; }
+
+/* ---- figure plates ---- */
+.plate {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  padding: 14px;
+  margin: 28px 0 0;
+}
+.plate img { border: 1px solid var(--hairline); }
+.plate.narrow { max-width: 480px; margin-left: auto; margin-right: auto; }
+.figtag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+}
+.figtag strong { color: var(--ink); }
+
+/* ---- numbered steps ---- */
+ol.steps { list-style: none; counter-reset: step; margin: 18px 0; }
+ol.steps li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 42px;
+  margin: 16px 0;
+}
+ol.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0; top: -1px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--writer-text);
+  border: 1.5px solid var(--writer-text);
+  border-radius: 4px;
+  width: 27px; height: 27px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ---- dot bullet list ---- */
+ul.dotlist { list-style: none; margin: 18px 0; }
+ul.dotlist li { position: relative; padding-left: 22px; margin: 12px 0; }
+ul.dotlist li::before {
+  content: '';
+  position: absolute; left: 2px; top: 10px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--subject);
+}
+
+/* two-column layout for paired lists on wide screens */
+.cols2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0 32px;
+}
+@media (min-width: 640px) {
+  .cols2 { grid-template-columns: 1fr 1fr; }
+}
+.cols2 > ol.steps, .cols2 > ul.dotlist { margin-top: 18px; }
+
+/* ---- callout (amber left border) ---- */
+.callout {
+  background: var(--surface);
+  border-left: 3px solid var(--writer-text);
+  padding: 16px 20px;
+  margin: 26px 0;
+}
+.callout .ct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--writer-text);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* ---- mono note ---- */
+.mnote {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  letter-spacing: .03em;
+  color: var(--muted);
+  line-height: 1.8;
+  margin: 22px 0;
+  padding: 14px 18px;
+  border: 1px solid var(--hairline);
+}
+
+/* ---- assumptions list ---- */
+ul.qlist { list-style: none; margin: 16px 0; }
+ul.qlist li { position: relative; padding-left: 20px; margin: 10px 0; }
+ul.qlist li::before {
+  content: '?';
+  position: absolute; left: 0; top: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--writer-text);
+}
+
+/* ---- data table ---- */
+table.datatable {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: .92rem;
+}
+table.datatable th, table.datatable td {
+  text-align: left;
+  padding: 10px 14px;
+  border: 1px solid var(--hairline);
+  vertical-align: top;
+}
+table.datatable th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface);
+}
+
+/* ---- finding blockquote ---- */
+blockquote.finding {
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  padding: 18px 22px;
+  margin: 24px 0;
+  font-family: 'Fraunces', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+/* ---- architecture plate ---- */
+.archplate { background: var(--surface); border: 1px solid var(--hairline); padding: 18px 12px 8px; margin: 28px 0 0; }
+.archplate svg { width: 100%; height: auto; display: block; }
+
+/* ---- download box ---- */
+.download {
+  border: 1px solid var(--hairline);
+  padding: 18px 20px;
+  margin: 30px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.download .dl-label { font-family: 'JetBrains Mono', monospace; font-size: .85rem; color: var(--muted); }
+.download a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .8rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--bg) !important;
+  background: var(--accent);
+  padding: 10px 18px;
+  text-decoration: none;
+  border-radius: 3px;
+}
+.download a:hover { background: var(--writer-text); }
+
+/* ---- misc notices / footer ---- */
+.notice {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  letter-spacing: .03em;
+  color: var(--muted);
+  margin: 30px 0;
+}
+
+.backlink {
+  display: inline-block;
+  margin: 26px 0 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.backlink:hover { color: var(--accent); }
+
+footer {
+  border-top: 1px solid var(--hairline);
+  margin-top: 40px;
+  padding: 26px 0 70px;
+}
+footer .wrap {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .8rem;
+  color: var(--muted);
+  line-height: 2;
+}
+footer a { color: var(--muted); }
+footer a:hover { color: var(--accent); }
+footer .fname { color: var(--ink); font-weight: 700; font-size: .9rem; }
+
+@media (max-width: 480px) {
+  body { font-size: 16.5px; }
+  .card-body { padding: 16px 18px 20px; }
+  .plate { padding: 10px; }
+  .hero { padding-top: 34px; }
+}

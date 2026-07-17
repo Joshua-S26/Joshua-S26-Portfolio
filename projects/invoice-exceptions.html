@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Invoice exceptions: a full-stack Power Platform design</title>
+<meta name="description" content="A solution sketch for a Power Platform invoice exceptions workflow: a canvas app, an embedded Power BI hub, a Teams approval flow, and a Copilot Studio agent.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<div class="wrap"><a class="backlink" href="../index.html">← Back to portfolio</a></div>
+
+<header class="hero wrap">
+  <p class="kicker">Solution sketch · Invoice exceptions · Utility finance</p>
+  <h1>Close the loop on invoice exceptions</h1>
+  <div class="rule"></div>
+  <p class="lead"><em>A design exercise for a common utility finance scenario: invoices come in above estimate, and the reasons don't get captured.</em> The design works as a new build or as an improvement to an existing app.</p>
+</header>
+
+<main class="wrap">
+
+  <h2>The problem</h2>
+  <ol class="steps">
+    <li><strong>Invoices come in above estimate.</strong> The reason lives in emails, calls, and memory.</li>
+    <li><strong>The weekly review loses time to questioning numbers</strong> instead of removing causes.</li>
+    <li><strong>Financial controls need every variance tied to a reason code, an owner, and a decision.</strong></li>
+  </ol>
+
+  <div class="plate">
+    <img src="../assets/app-mockup.png" alt="Screenshot mockup of the Invoice Exception Tracker canvas app: a queue of invoices flagged for variance against estimate, with vendor, work order, estimate, invoice, variance percent, and status columns, and a disposition form on the right for setting a reason code and comments.">
+    <p class="figtag"><strong>FIG. 1</strong> · Canvas app · exceptions queue and disposition form · fictional data</p>
+  </div>
+
+  <h2>How it works</h2>
+  <div class="cols2">
+    <ol class="steps">
+      <li><strong>Exceptions surface from SQL staging.</strong> Only invoices over the variance threshold reach the queue. The analyst investigates, then records the conclusion as a reason code and comment.</li>
+      <li><strong>Reason codes are reference data owned by Finance.</strong> The list lives in its own table, so codes change without an app release.</li>
+    </ol>
+    <ol class="steps" style="counter-reset: step 2;">
+      <li><strong>Variances over 10% start an approval.</strong> The card lands in Teams, with a reminder at 48 hours and an alert to the owner if the flow errors.</li>
+      <li><strong>Access is audited by design.</strong> Security roles by team, column security on cost fields, every change logged in Dataverse.</li>
+    </ol>
+  </div>
+  <p class="mnote">Why a canvas app: the native Power BI visual embeds canvas apps and passes the report's row selection into the app. A model-driven app can be iframed into a report, but without that selection context. Model-driven stays the right call for a case-management back office on the same tables.</p>
+
+  <p class="kicker">Power BI + Power Apps · One surface</p>
+  <h2>The operations and analytics hub</h2>
+  <p>The Power Apps visual embeds the disposition form inside the Power BI report. The review reads the numbers and fixes the record on the same page.</p>
+
+  <div class="plate">
+    <img src="../assets/pbi-hub.png" alt="Screenshot mockup of the Exception Operations Hub Power BI report: KPI tiles for variance and open exceptions, a variance percent versus target trend chart, a vendor table, and reason codes ranked by variance dollars, with the canvas app embedded on the right for working an exception inline.">
+    <p class="figtag"><strong>FIG. 2</strong> · Power BI report with the app embedded at right · fictional data</p>
+  </div>
+
+  <div class="cols2">
+    <ul class="dotlist">
+      <li><strong>Click a vendor or invoice row and the embedded form opens on that record.</strong> The selection carries into the app, so nobody re-searches the invoice.</li>
+      <li><strong>Submit writes to Dataverse, then the app triggers a report refresh.</strong> The exception shows resolved while the page is still open.</li>
+    </ul>
+    <ul class="dotlist">
+      <li><strong>The report ranks what matters, the app records the decision.</strong> Reasons ranked by variance dollars show which cause to attack first.</li>
+      <li><strong>Slicers scope the meeting.</strong> Region, work type, and month cut the queue to the room that is looking at it.</li>
+    </ul>
+  </div>
+
+  <div class="callout">
+    <p class="ct">Why embed the app at all</p>
+    <p style="margin:0;">Without embedding: the review spots INV-20391, someone writes it down, opens the app after the meeting, searches for the invoice, and the report shows it open until the next refresh. With embedding: the row is clicked, the form is already on that invoice, and the number moves before the meeting ends. No gap where follow-ups get lost.</p>
+  </div>
+
+  <p class="kicker">Power Automate · Copilot Studio</p>
+  <h2>The approval flow and the agent</h2>
+  <p>The same Dataverse tables that run the app and the report feed the approval flow and the agent.</p>
+
+  <div class="plate narrow">
+    <img src="../assets/teams-approval.png" alt="Screenshot mockup of a Microsoft Teams Approvals card for an invoice variance: the request shows the estimate, invoice amount, variance, reason code, and comments, with the approver's decision and comment recorded.">
+    <p class="figtag"><strong>FIG. 3</strong> · Power Automate approval card in Teams · the decision writes back to Dataverse</p>
+  </div>
+
+  <div class="cols2">
+    <ul class="dotlist">
+      <li><strong>A Power Automate flow starts the approval when variance passes the threshold.</strong> The approver decides in Teams; decision, comment, and timestamp write back to Dataverse.</li>
+    </ul>
+    <ul class="dotlist">
+      <li><strong>Reminder at 48 hours.</strong> If the flow errors, the owner is alerted the same hour. Unanswered approvals are how invoices age out.</li>
+    </ul>
+  </div>
+
+  <div class="plate narrow">
+    <img src="../assets/copilot-agent.png" alt="Screenshot mockup of a Copilot Studio chat agent, dark theme, grounded on invoice exception history: it answers a question about a vendor's open exceptions, lists the cited invoice records, and suggests a next step.">
+    <p class="figtag"><strong>FIG. 4</strong> · Copilot Studio agent grounded on exception history · every answer cites its records</p>
+  </div>
+
+  <div class="cols2">
+    <ul class="dotlist">
+      <li><strong>Ask about a vendor, get the pattern.</strong> The agent reads exception history in Dataverse, cites the records behind every answer, and suggests the next step.</li>
+    </ul>
+    <ul class="dotlist">
+      <li><strong>It ships scoped.</strong> One knowledge source, a credit budget, DLP policies applied. A contained first agent that earns the second one.</li>
+    </ul>
+  </div>
+
+  <p class="kicker">One data model · Four surfaces</p>
+  <h2>Architecture</h2>
+  <p>Dataverse holds the exceptions and the reason codes. The app, the report, the flow, and the agent are four surfaces on that one model. Data flows from SAP, the system of record, into SQL Server staging, through an on-premises data gateway, into Dataverse. Dataverse carries the exceptions, the reason codes, the security roles, and the audit log, and is the base for the canvas app. Power Automate watches for variances over the threshold and runs the approval. Power BI is the review page, with the canvas app embedded for write-back. A Copilot Studio agent, grounded on exception history, is a pilot planned after the hub ships, so it can answer questions like why a vendor is over budget this quarter, inside the review itself. The whole design ships as a managed solution through dev, test, and prod pipelines.</p>
+
+  <div class="archplate">
+    <svg viewBox="0 0 700 178" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="archTitle archDesc">
+      <title id="archTitle">Architecture diagram: one Dataverse model, four surfaces</title>
+      <desc id="archDesc">SAP and SQL Server feed a data gateway, which feeds Dataverse and the canvas app. Dataverse feeds Power Automate and Power BI. A Copilot Studio agent is grounded on exception history from Dataverse and answers questions inside the Power BI review. The whole system ships as a managed solution through dev, test, and prod pipelines.</desc>
+
+      <g stroke="#1A2430" stroke-width="1.6" fill="none">
+        <rect x="462" y="12" width="30" height="21" rx="5"/>
+        <polygon points="469,33 469,40 477,33" fill="#1A2430" stroke="none"/>
+        <line x1="470" y1="19" x2="470" y2="26"/><line x1="477" y1="19" x2="477" y2="26"/><line x1="484" y1="19" x2="484" y2="26"/>
+      </g>
+      <text x="500" y="23" font-family="'Source Sans 3', sans-serif" font-size="11" font-weight="700" fill="#1A2430">Copilot Studio</text>
+      <text x="500" y="33" font-family="'JetBrains Mono', monospace" font-size="7.5" letter-spacing="0.6" fill="#556472">AGENT · PILOT AFTER THE HUB</text>
+      <line x1="340" y1="62" x2="340" y2="23" stroke="#8A5A0F" stroke-width="1.1" stroke-dasharray="3,2.5"/>
+      <line x1="340" y1="23" x2="450" y2="23" stroke="#8A5A0F" stroke-width="1.1" stroke-dasharray="3,2.5"/>
+      <polygon points="449,19.5 456,23 449,26.5" fill="#8A5A0F"/>
+      <text x="352" y="46" font-family="'JetBrains Mono', monospace" font-size="7.2" letter-spacing="0.5" fill="#8A5A0F">GROUNDED ON</text>
+      <text x="352" y="55" font-family="'JetBrains Mono', monospace" font-size="7.2" letter-spacing="0.5" fill="#8A5A0F">EXCEPTION HISTORY</text>
+      <line x1="592" y1="23" x2="620" y2="23" stroke="#8A5A0F" stroke-width="1.1" stroke-dasharray="3,2.5"/>
+      <line x1="620" y1="23" x2="620" y2="57" stroke="#8A5A0F" stroke-width="1.1" stroke-dasharray="3,2.5"/>
+      <polygon points="616.5,56 623.5,56 620,63" fill="#8A5A0F"/>
+      <text x="630" y="46" font-family="'JetBrains Mono', monospace" font-size="7.2" letter-spacing="0.5" fill="#8A5A0F">ANSWERS IN</text>
+      <text x="630" y="55" font-family="'JetBrains Mono', monospace" font-size="7.2" letter-spacing="0.5" fill="#8A5A0F">THE REVIEW</text>
+
+      <g stroke="#1A2430" stroke-width="1.7" fill="none">
+        <ellipse cx="60" cy="78" rx="14" ry="5"/>
+        <path d="M46,78 L46,100 A14,5 0 0 0 74,100 L74,78"/>
+        <path d="M46,89 A14,5 0 0 0 74,89"/>
+      </g>
+      <g stroke="#1A2430" stroke-width="1.7" fill="none">
+        <path d="M200,70 L213,76 L213,89 C213,98 207,103 200,106 C193,103 187,98 187,89 L187,76 Z"/>
+        <circle cx="200" cy="86" r="3.2"/>
+        <line x1="200" y1="89" x2="200" y2="96"/>
+      </g>
+      <rect x="314" y="62" width="52" height="50" rx="6" stroke="#1D4E7E" stroke-width="1.5" fill="none"/>
+      <g stroke="#1A2430" stroke-width="1.6" fill="none">
+        <rect x="324" y="72" width="32" height="30" rx="2"/>
+        <line x1="324" y1="81" x2="356" y2="81"/>
+        <line x1="335" y1="81" x2="335" y2="102"/>
+        <line x1="346" y1="81" x2="346" y2="102"/>
+      </g>
+      <polygon points="486,66 468,90 478,90 473,108 492,82 481,82" fill="none" stroke="#1A2430" stroke-width="1.7" stroke-linejoin="round"/>
+      <g stroke="#1A2430" stroke-width="1.7" fill="none">
+        <rect x="605" y="88" width="8" height="14"/>
+        <rect x="616" y="76" width="8" height="26"/>
+        <rect x="627" y="82" width="8" height="20"/>
+        <line x1="602" y1="105" x2="638" y2="105"/>
+      </g>
+
+      <line x1="80" y1="87" x2="174" y2="87" stroke="#8A5A0F" stroke-width="1.4"/><polygon points="173,83.5 180,87 173,90.5" fill="#8A5A0F"/>
+      <line x1="220" y1="87" x2="302" y2="87" stroke="#8A5A0F" stroke-width="1.4"/><polygon points="301,83.5 308,87 301,90.5" fill="#8A5A0F"/>
+      <line x1="372" y1="87" x2="454" y2="87" stroke="#8A5A0F" stroke-width="1.4"/><polygon points="453,83.5 460,87 453,90.5" fill="#8A5A0F"/>
+      <line x1="498" y1="87" x2="590" y2="87" stroke="#8A5A0F" stroke-width="1.4"/><polygon points="589,83.5 596,87 589,90.5" fill="#8A5A0F"/>
+
+      <g font-family="'Source Sans 3', sans-serif" font-size="11" font-weight="700" fill="#1A2430" text-anchor="middle">
+        <text x="60" y="128">SAP · SQL Server</text>
+        <text x="200" y="128">Data gateway</text>
+        <text x="340" y="128" fill="#1D4E7E">Dataverse + canvas app</text>
+        <text x="480" y="128">Power Automate</text>
+        <text x="620" y="128">Power BI hub</text>
+      </g>
+      <g font-family="'JetBrains Mono', monospace" font-size="7.2" letter-spacing="0.5" fill="#556472" text-anchor="middle">
+        <text x="60" y="140">SYSTEMS OF RECORD</text>
+        <text x="200" y="140">SECURE ON-PREM BRIDGE</text>
+        <text x="340" y="140">REASON CODES · ROLES · AUDIT</text>
+        <text x="480" y="140">THRESHOLD APPROVALS</text>
+        <text x="620" y="140">REVIEW PAGE · APP EMBEDDED</text>
+      </g>
+      <text x="350" y="165" font-family="'JetBrains Mono', monospace" font-size="7.8" letter-spacing="1.2" fill="#8A5A0F" text-anchor="middle">SHIPPED AS A MANAGED SOLUTION · DEV → TEST → PROD PIPELINES</text>
+    </svg>
+    <p class="figtag"><strong>FIG. 5</strong> · One Dataverse model, four surfaces · the agent ships as the second release</p>
+  </div>
+
+  <h2>Assumptions I would validate in week one</h2>
+  <ul class="qlist">
+    <li>Where estimates and invoice status live today: the ERP directly, SQL staging, or both. This sketch assumes SQL Server in front of SAP.</li>
+    <li>What an existing app already captures. If reason codes exist today, the win is the reference table, the embedded hub, and the write-back loop.</li>
+    <li>Who owns reason codes and approval thresholds. This design keeps both in Finance's hands.</li>
+  </ul>
+  <p class="mnote">The same design handles field work as-is: swap invoice exceptions for job completions, keep the reason codes, the flow, and the hub.</p>
+
+  <div class="download">
+    <span class="dl-label">Full solution sketch, 4 pages, PDF</span>
+    <a href="../assets/invoice-exceptions-sketch.pdf">Download the PDF</a>
+  </div>
+
+  <p class="notice">Fictional scenario, vendors, and data.</p>
+
+  <a class="backlink" href="../index.html">← Back to portfolio</a>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="fname">Joshua Short</p>
+    <p><a href="mailto:jshort26@sbcglobal.net">jshort26@sbcglobal.net</a></p>
+    <p><a href="https://github.com/Joshua-S26">github.com/Joshua-S26</a> <span class="sep">|</span> <a href="https://www.linkedin.com/in/joshua-s26/">linkedin.com/in/joshua-s26</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
